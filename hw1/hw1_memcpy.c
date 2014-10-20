@@ -28,7 +28,7 @@ void *memcpy(void *dest, const void *src, size_t n)
     src0 = (const char *)src;
     i = n;
 
-    while (n--)
+    while (i--)
       *dst0++ = *src0++;
 
   } else {
@@ -36,7 +36,7 @@ void *memcpy(void *dest, const void *src, size_t n)
     src0 = (const char *)(src + n - 1);
     i = n;
 
-    while (n--)
+    while (i--)
       *dst0-- = *src0--;
   }
 

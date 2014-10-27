@@ -1,0 +1,111 @@
+///////////////////////////////////////////////////////////
+//
+// UCSC Embedded and Firmware Essential Course -HW2
+// Components list
+// 
+// Autohor: Hisakazu Ishiguro (hisakazuishiguro@gmail.com)
+// Date:    Oct 21, 2014
+//
+///////////////////////////////////////////////////////////
+
+1. Installation and build mbed development environments
+
+1) Finished register & login @ https://developer.mbed.org/
+
+2) Finished installation firmware to my Ubuntu(14.0.4) machine.
+
+3) Exported the "Hello World" program offine to GCC ARM Embedded
+
+4) Finished installation of binwalk
+
+5) Finished to do 'git clone' https://github.com/mbedmicro/mbed
+
+2. Optional assignment
+
+1) How many text files and how many lines of text code in the exported offline code package?
+   82 source files covers; *.h and *.cpp:
+   > find . -not -path '*/\.*' -type f -name '*.cpp' -o -name '*.h' |wc -l
+   > 82
+
+   14048 lines:
+   > find . -not -path '*/\.*' -type f -name '*.cpp' -o -name '*.h'|xargs wc -l | tail
+   104 ./mbed/DirHandle.h
+   103 ./mbed/LocalFileSystem.h
+    51 ./mbed/us_ticker_api.h
+    51 ./mbed/gpio_api.h
+    80 ./mbed/can_api.h
+    35 ./mbed/toolchain.h
+    66 ./mbed/mbed_error.h
+   139 ./mbed/SerialBase.h
+    13 ./main.cpp
+ 14048 total
+
+2) How many binary (library or object) files?
+   8 binary files:
+   > find . -not -path '*/\.*' -type f -name '*.o' -o -name '*.bin' -o -name '*.a' | wc -l
+   > 8
+
+3) How many files are different between (a) and (b) ? (Use linux commands: find, wc, diff)
+
+4) What is the "Entry point address:" of your program?
+   Start address is: 0x000005e5
+   > arm-none-eabi-objdump -a HelloWorld2.elf
+   HelloWorld2.elf:     file format elf32-littlearm
+   architecture: arm, flags 0x00000112:
+   EXEC_P, HAS_SYMS, D_PAGED
+   start address 0x000005e5
+
+   BUT!! according to the result of 'nm' command, here might be correct starting address:
+   > arm-none-eabi-nm HelloWorld2.elf | fgrep -i start
+   1000017c B __bss_start__
+   100000c8 D __data_start__
+   00006fa4 t __exidx_start
+   10000170 D __init_array_start
+   00000120 T _mainCRTStartup
+   100003a4 B __malloc_sbrk_start
+   10000170 D __preinit_array_start
+   00000120 T _start
+
+   > arm-none-eabi-nm HelloWorld2.elf | fgrep main
+   00000194 T main
+   00000120 T _mainCRTStartup
+            U __real_main
+
+5) Optional: binwalk, objdump, nm to Analysis binaries files.
+   > binwalk -B -v HelloWorld2.elf
+
+   Scan Time:     2014-10-27 16:13:36
+   Target File:   HelloWorld2.elf
+   MD5 Checksum:  13f68f7a11646c35430dacb5fa6a6738
+   Signatures:    304
+
+   DECIMAL       HEXADECIMAL     DESCRIPTION
+   --------------------------------------------------------------------------------
+   0             0x0             ELF 32-bit LSB executable, ARM, version 1 (SYSV)
+   85047         0x14C37         Unix home path string: "/home/ishiguro/mbed/HelloWorld2"
+
+
+   // Compareing two binary files using binwalk -W
+   > binwalk -W HelloWorld/HelloWorld.bin HelloWorld2/HelloWorld2.bin | head -30
+
+OFFSET      HelloWorld/HelloWorld.bin                                            HelloWorld2/HelloWorld2.bin
+--------------------------------------------------------------------------------
+0x00000000  00 80 00 10 FD 01 00 00 31 02 00 00 33 02 00 00 |........1...3...| \ 00 80 00 10 E5 05 00 00 15 06 00 00 17 06 00 00 |................|
+0x00000010  35 02 00 00 37 02 00 00 39 02 00 00 00 00 00 00 |5...7...9.......| / 19 06 00 00 1B 06 00 00 1D 06 00 00 00 00 00 00 |................|
+0x00000020  00 00 00 00 00 00 00 00 00 00 00 00 3B 02 00 00 |............;...| \ 00 00 00 00 00 00 00 00 00 00 00 00 1F 06 00 00 |................|
+0x00000030  3D 02 00 00 00 00 00 00 3F 02 00 00 41 02 00 00 |=.......?...A...| / 21 06 00 00 00 00 00 00 23 06 00 00 25 06 00 00 |!.......#...%...|
+0x00000040  45 02 00 00 47 02 00 00 49 02 00 00 4B 02 00 00 |E...G...I...K...| \ 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x00000050  4D 02 00 00 4F 02 00 00 51 02 00 00 53 02 00 00 |M...O...Q...S...| / 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x00000060  55 02 00 00 57 02 00 00 59 02 00 00 5B 02 00 00 |U...W...Y...[...| \ 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x00000070  5D 02 00 00 5F 02 00 00 61 02 00 00 63 02 00 00 |]..._...a...c...| / 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x00000080  65 02 00 00 67 02 00 00 69 02 00 00 6B 02 00 00 |e...g...i...k...| \ 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x00000090  6D 02 00 00 6F 02 00 00 71 02 00 00 73 02 00 00 |m...o...q...s...| / 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x000000A0  75 02 00 00 77 02 00 00 79 02 00 00 7B 02 00 00 |u...w...y...{...| \ 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x000000B0  7D 02 00 00 7F 02 00 00 81 02 00 00 83 02 00 00 |}...............| / 27 06 00 00 27 06 00 00 27 06 00 00 27 06 00 00 |'...'...'...'...|
+0x000000C0  85 02 00 00 87 02 00 00 89 02 00 00 15 4B 00 2B |.............K.+| \ 27 06 00 00 27 06 00 00 27 06 00 00 10 B5 05 4C |'...'...'......L|
+0x000000D0  08 BF 13 4B 9D 46 A3 F5 80 3A 00 21 8B 46 0F 46 |...K.F...:.!.F.F| / 23 78 33 B9 04 4B 13 B1 04 48 AF F3 00 80 01 23 |#x3..K...H.....#|
+0x000000E0  13 48 14 4A 12 1A 00 F0 AC FA 0F 4B 00 2B 00 D0 |.H.J.......K.+..| \ 23 70 10 BD 7C 01 00 10 00 00 00 00 A0 6F 00 00 |#p..|........o..|
+0x000000F0  98 47 0E 4B 00 2B 00 D0 98 47 00 20 00 21 04 00 |.G.K.+...G...!..| / 08 B5 06 4B 1B B1 06 48 06 49 AF F3 00 80 06 48 |...K...H.I.....H|
+0x00000100  0D 00 0D 48 00 28 02 D0 0C 48 AF F3 00 80 00 F0 |...H.(...H......| \ 03 68 13 B1 05 4B 03 B1 98 47 08 BD 00 00 00 00 |.h...K...G......|
+0x00000110  61 FA 20 00 29 00 00 F0 13 F8 00 F0 B7 F8 00 BF |a...)...........| / A0 6F 00 00 80 01 00 10 7C 01 00 10 00 00 00 00 |.o......|.......|
+0x00000120  00 00 08 00 00 80 00 10 00 00 00 00 00 00 00 00 |................| \ 15 4B 00 2B 08 BF 13 4B 9D 46 A3 F5 80 3A 00 21 |.K.+...K.F...:.!|

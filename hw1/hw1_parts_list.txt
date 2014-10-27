@@ -1,0 +1,34 @@
+///////////////////////////////////////////////////////////
+//
+// UCSC Embedded and Firmware Essential Course -HW1(part 2)
+// Components list
+// 
+// Autohor: Hisakazu Ishiguro
+// Date:    Oct 8, 2014
+//
+///////////////////////////////////////////////////////////
+
+I opened broken APPLE iPhone 3GS. Here are the list of major components that I was able to find out:
+
+APPLE
+CPU
+ARM Cortex-A8,
+339S0074 ARM K4X1G163PD-DGC 3
+http://www.arm.com/products/processors/cortex-a/cortex-a8.php
+
+SKYWORKS
+Power Amplifier Module(PAM) for Quad-Band GSM/EDGE
+SKY77340-21  3776012.1 0919
+http://www.skyworksinc.com/uploads/documents/200147a.pdf
+
+System Memory
+337S3754 CMA
+
+Infineon
+Transceiver IC
+338S0353  A  G0919
+
+APPLE
+Power Management IC
+338S0512
+http://all-spares.com/Power-Control-IC-338S0512-for-Apple-iPhone-3G-Cell-Phone.php

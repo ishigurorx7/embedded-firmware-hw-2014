@@ -49,7 +49,7 @@
 
 4) What is the "Entry point address:" of your program?
    Start address is: 0x000005e5
-   > arm-none-eabi-objdump -a HelloWorld2.elf
+   > arm-none-eabi-objdump -f HelloWorld2.elf
    HelloWorld2.elf:     file format elf32-littlearm
    architecture: arm, flags 0x00000112:
    EXEC_P, HAS_SYMS, D_PAGED

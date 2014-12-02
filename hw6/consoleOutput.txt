@@ -1,0 +1,34 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  START CIRCULAR BUFFER TEST  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Diagnostic LEDs ...
+Create & initialize circular buffer ...
+Init CircularBuffer: keys[64] total mem size=68 bytes
+Start Testing ...
+Start Buffer Enque ticker, called every  10.00 ms ...
+Start Buffer Deque ticker, called every  15.00 ms ...
+Start Usage  Meter ticker, called every  85.00 ms ...
+
+METER: usage=  4% (rp=  5 wp=  8 sz= 64)
+METER: usage= 31% (rp= 39 wp= 59 sz= 64)
+METER: usage= 58% (rp=  9 wp= 46 sz= 64)
+METER: usage= 85% (rp= 43 wp= 33 sz= 64)
+ENQUE: Buff full,  update ticker's inteval!
+METER: usage= 88% (rp= 17 wp=  9 sz= 64)
+METER: usage= 61% (rp=  4 wp= 43 sz= 64)
+METER: usage= 34% (rp= 55 wp= 13 sz= 64)
+METER: usage=  7% (rp= 42 wp= 47 sz= 64)
+DEQUE: Buff mepty, update ticker's interval
+METER: usage= 15% (rp= 14 wp= 24 sz= 64)
+METER: usage= 42% (rp= 48 wp= 11 sz= 64)
+METER: usage= 69% (rp= 18 wp= 62 sz= 64)
+METER: usage= 96% (rp= 52 wp= 49 sz= 64)
+ENQUE: Buff full,  update ticker's inteval!
+METER: usage= 77% (rp= 33 wp= 18 sz= 64)
+METER: usage= 50% (rp= 20 wp= 52 sz= 64)
+METER: usage= 23% (rp=  7 wp= 22 sz= 64)
+DEQUE: Buff mepty, update ticker's interval
+METER: usage=  1% (rp= 53 wp= 54 sz= 64)
+METER: usage= 28% (rp= 23 wp= 41 sz= 64)
+METER: usage= 55% (rp= 57 wp= 28 sz= 64)
+METER: usage= 82% (rp= 27 wp= 15 sz= 64)

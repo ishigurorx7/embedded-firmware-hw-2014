@@ -1,0 +1,31 @@
+Initialising...
+IP Address is 192.168.0.184
+
+Sending at 4 seconds
+Received: 255 0 0
+Received: 255 255 0
+Received: 255 510 0
+Received: 255 765 0
+Received: 50 1020 0
+Received: 0 1070 0
+
+Sending at 5 seconds
+Received: 255 0 0
+Received: 255 255 0
+Received: 255 510 0
+Received: 255 765 0
+Received: 50 1020 0
+Received: 0 1070 0
+
+Sending at 6 seconds
+Received: 255 0 0
+Received: 255 255 0
+Received: 255 510 0
+Received: 255 765 0
+Received: 50 1020 0
+Received: 0 1070 0
+
+Sending at 7 seconds
+Received: 255 0 0
+Received: 255 255 0
+Received: 255 510 0

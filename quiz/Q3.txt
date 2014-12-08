@@ -1,0 +1,114 @@
+BEGIN
+--------------------------------------------------------------------
+1. What is the _mask value for LED1? 
+   What is the address of FIOSET?
+
+1) mask value for LED1
+P1_28
+
+Here are the definitions in PinNames.h and LPC17xx.h:
+
+#define LPC_GPIO0_BASE (LPC_GPIO_BASE + 0x00000)
+
+typedef enum {
+  // LPC Pin Names
+  P0_0 = LPC_GPIO_BASE,
+  P0_1, P0_2, P0_3, P0_4, P0_5, P0_6, P0_7, P0_8, P0_9, P0_10, P0_11, P0_12, P0_13, P0_14, P0_15, P0_16, P0_17, P0_18, P0_19, P0_20, P0_21, P0_22, P0_23, P0_24, P0_25, P0_26, P0_27, P0_28, P0_29, P0_30, P0_31, ...
+
+  LED1 = P1_28,
+  ...
+} PinName
+
+2) FIOSET:
+Fast Port Output Set register usng FIOMASK. This register controls he state of output port pins.
+Writing 1s produces highs at the corresponding port pins. Writing 0s has no effect.
+Reading this register returns the current contents of the port output register.
+Only bits enabled by 0 n FIOMASK can be altered.
+
+RegisterName    Address
+FIO0SET         0x2009 c018
+FIO1SET         0x2009 c038
+FIO2SET         0x2009 c058
+FIO3SET         0x2009 c078
+FIO4SET         0x2009 c098
+
+--------------------------------------------------------------------
+2. What is the RS232 Frame?
+
+The UART sits between the host computer and the serial channel.
+The serial cannel is the collection of wires over which the bits are transmitted.
+The output from the UART is a started TTL/CMOS logic level of 0 or 5 volts.
+In order to improve bandwidth, remove noise, and increase range, this TTL logic level
+is converted to an RS-232 logic level of -12 or +12 volts before beging sent out on the
+serial channel.
+
+A frame is a complete and nondivisible packet of bits.
+A frame includes both information(e.g., data and characters) and overhead
+(e.g., start bit, error checking and stop bits).
+In asyncronous serial protocols such as RS-232, the frame consists of one start bit,
+seven or eight data bits, parity bits, and stop bit. 
+Note that the exact structure of the frame must be agreed upon by both transmitter
+and receiver before the common-link must be opened.
+
+The bit time is the basic unitof time used in serial communication.
+It is the time between each bit. The transmitter output a bit, 
+waits one bit time and then output the next bit. The start bit is used to syncronize
+the transmitter and receiver. After the receiver senses the true-false transition
+in the start bit, it waits one half bit time and then starts reading the serial line
+once every bit time afte that. The baud rate is the total number of bits(information,
+overhead, and idle) per time that is transmitted over the serial link. 
+So, we can compute the baud rate as the recipocal of the bit time.
+
+Referenced:
+http://controls.ame.nd.edu/microcontroller/main/node24.html
+
+--------------------------------------------------------------------
+3. Explain the start and stop conditions of i2c?
+
+1) Start condition:
+The chip issuing the Start condition first pulls the SDA(data) line low,
+and next pulls the SCL(clock) line low.
+
+Prior to any transaction on the bus, a START condition needs to be issued on the bus.
+The start condition acts as a signal to all connected IC's that something is about to be 
+transmitted on the bus. As a result, all connected chips will listen to the bus.
+
+Stop condition:
+The Bus Master first releases the SCL and then the SDA line.
+
+After a message has been completed, a STOP condition is sent.
+This is the signal for all devices on the bus that the bus is available again (idle).
+If a chip was accessed and has received data during the last transaction, 
+it will now process this information (if not already processed during the reception 
+of the message).
+
+Referenced:
+http://www.esacademy.com/en/library/technical-articles-and-documents/miscellaneous/i2c-bus/i2c-bus-events/start-and-stop-conditions.html
+
+--------------------------------------------------------------------
+4. Is the i2c acknowledge SDA LOW or SDA HIGH?
+
+LOW. 
+
+The Acknowledge signal is defined as follows: 
+the transmitter releases the SDA line during the acknowledge clock pulse so the receiver 
+can pull the SDA line LOW and it remains stable LOW during the HIGH period of this clock 
+pulse. Set-up and hold times must also be taken into account.
+When SDA remains HIGH during this ninth clock pulse, this is defined as the Not Acknowledge signal.
+The master can then gene rate either a STOP condition to abort the
+transfer, or a repeated START condition to start a new transfer.
+
+Referenced: 
+http://www.nxp.com/documents/user_manual/UM10204.pdf
+
+--------------------------------------------------------------------
+5. Tell me about the DDR3 write leveling Concept in one sentence.  
+   (ref: slides)
+
+With DDR3 the memory signals can be allowed to driven to each bank of memory or DIMM
+on a fly-by basis. 
+
+Referenced:
+http://daffy1108.wordpress.com/2010/09/02/understanding-ddr3-write-leveling-and-read-leveling/
+
+END

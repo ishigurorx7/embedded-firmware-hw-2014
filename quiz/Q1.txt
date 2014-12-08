@@ -1,0 +1,350 @@
+BEGIN
+--------------------------------------------------------------------
+Q1: Is there any compile error with the following code (if any)?
+
+	unsigned int Arr[16];
+	3[Arr] = 7; 
+ 
+Explain:
+
+A1: (Hisakazu, Sun Dec  7 17:24:10 PST 2014)
+
+1. No compilation error.
+2. No runtime error.
+
+Reason, following two codes are almost equivalent:
+
+Arr[3] = 7;
+3[Arr] = 7;
+
+Because syntax of array operation in C is something like:
+
+<start address>[<offset size>] = data;
+
+'Arr' is a name of array which is constant of the address. It's also start address of the (16 * size of (unsigned int)) allocated memory location. The space could be allocated in stack if it's defined inside of the function. On second code, '3' can be name of the array 'cos it's constant value, and their offset is actual constant value of the 'Arr' defined address.
+
+In order to figure out actual behaviour of above code, I wrote following test codes:
+
+     1    #include <stdio.h>
+     2   
+     3    main()
+     4    {
+     5      unsigned int Arr[16]   = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14,15 };
+     6      unsigned int Dummy[16] = { 16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31 };
+     7      unsigned int rd;
+     8   
+     9      printf("SHOW: Arr: %p\n", Arr);
+    10      printf("SHOW: Arr[3]:%d\n", Arr[3]);
+    11      3[Arr] = 7;
+    12      printf(" RUN: 3[Arr]=7\n");
+    13      printf("SHOW: Arr[3]:%d\n", Arr[3]);
+    14   
+    15      printf("SHOW: Dummy[0]:%d\n", Dummy[0]);
+    16      16[Arr] = 0;
+    17      printf(" RUN: 16[Arr]=0\n");
+    18      printf("SHOW: Dummy[0]:%d\n", Dummy[0]);
+    19   
+    20    #if 0
+    21      Arr[16]=0;                      // Compiler is happy (very danger)
+    22      rd = 3[0];                      // error: subscripted value is neither array nor pointer nor vector
+    23      rd = 3[(unsigned int *)0];      // Compiler is happy (very danger)
+    24    #endif
+    25   
+    26      return 0;
+    27    }
+    28   
+    29    #if 0 // Console output
+    30    ishiguro@lenovo:~/c$ !gcc
+    31    gcc test.c
+    32    ishiguro@lenovo:~/c$ ./a.out
+    33    SHOW: Arr: 0x7fffb36696f0
+    34    SHOW: Arr[3]:3
+    35     RUN: 3[Arr]=7
+    36    SHOW: Arr[3]:7
+    37    SHOW: Dummy[0]:16
+    38     RUN: 16[Arr]=0
+    39    SHOW: Dummy[0]:0
+    40    ishiguro@lenovo:~/c$
+    41    #endif
+
+--------------------------------------------------------------------
+Q2: What is the difference between the following 3 statements? 
+
+const int * px; 
+int const * px; 
+int * const px; 
+
+Is there any compile error for the following cases?
+case1: 
+int x = 13; 
+const int * px; 
+px = & x; 
+
+case 2: 
+int x = 13; 
+int const * px; 
+px = & x; 
+
+case 3: 
+int x = 13; 
+int * const px; 
+px = & x; 
+
+Explain:
+
+A2(1): (Hisakazu, Sun Dec  7 17:54:40 PST 2014)
+
+const int * px;   // You can change their pointer, but cannot their data
+int const * px;   // Samve with above
+int * const px;   // You can cange their data, but cannot their pointer
+
+Here is the experiment of above constant operation:
+
+     1	#include <stdio.h>
+     2	
+     3	main()
+     4	{
+     5	  int x1 = 1;
+     6	  int x2 = 2;
+     7	  int x3 = 3;
+     8	      
+     9	  const int *px1 = &x1;
+    10	  int const *px2 = &x2;
+    11	  int *const px3 = &x3;
+    12		    
+    13	  px1++;          // Okay
+    14	  //  *px1 = 3;   // oerror: assignment of read-only location ‘*px1’
+    15			
+    16	  px2++;
+    17	  //  *px2 = 4;   // error: assignment of read-only location ‘*px2’
+    18			    
+    19	  //  px3++;      // error: increment of read-only variable ‘px3’
+    20	  *px3 = 5;       // Okay
+    21				
+    22	  return 0;
+    23	}
+
+A2(1): (Hisakazu Sun Dec  7 17:54:40 PST 2014)
+
+case 1 and 2 is fine.
+case 2 will be compilation failure. Since px is constant, you can not update the address usng following code:
+
+px = & x;
+
+You can set their address at initialization time only, so right code is something like this:
+
+case 3: 
+int x = 13; 
+int * const px = &x;
+
+--------------------------------------------------------------------
+Q3: Write a function to set or clear ith bit of a 32-bit register. 
+	Where ith (0-based) := {0, 1, 2, …, 31 } 
+void reg_set(volatile unsigned int * pReg, int ith) 
+{ 
+} 
+
+void reg_clear(volatile unsigned int * pReg, int ith) 
+{ 
+} 
+
+A3: (Hisakazu, Sun Dec  7 18:57:00 PST 2014)
+
+Please see following code & test output:
+
+     1	#include <stdio.h>
+     2	#include <assert.h>
+     3	
+     4	void reg_set(volatile unsigned int *pReg, int ith)
+     5	{
+     6	  assert(pReg != 0);
+     7	  assert(ith >= 0 && ith < (8 * sizeof(unsigned int)));
+     8	  *pReg |= (1 << ith);
+     9	}
+    10	
+    11	void reg_clear(volatile unsigned int *pReg, int ith)
+    12	{
+    13	  assert(pReg != 0);
+    14	  assert(ith >= 0 && ith < (8 * sizeof(unsigned int)));
+    15	  *pReg &= ~(1 << ith);
+    16	}
+    17	
+    18	main()
+    19	{
+    20	  unsigned int reg32 = 0;
+    21	  int i;
+    22	  const int sz = (8 * sizeof (unsigned int));
+    23	
+    24	  // teset for reg_set
+    25	  for (i = 0; i < sz; i++) {
+    26	    reg_set(&reg32, i);
+    27	    printf("ith=%2d  reg=0x%08x\n", i, reg32);
+    28	  }
+    29	
+    30	  printf("\n");
+    31	
+    32	  // teset for reg_clear
+    33	  for (i = (sz - 1); i >= 0; i--) {
+    34	    reg_clear(&reg32, i);
+    35	    printf("ith=%2d  reg=0x%08x\n", i, reg32);
+    36	  }
+    37	
+    38	  return 0;
+    39	}
+
+ishiguro@lenovo:~/c$ gcc test3.c
+ishiguro@lenovo:~/c$ ./a.out
+ith= 0  reg=0x00000001
+ith= 1  reg=0x00000003
+ith= 2  reg=0x00000007
+ith= 3  reg=0x0000000f
+ith= 4  reg=0x0000001f
+ith= 5  reg=0x0000003f
+ith= 6  reg=0x0000007f
+ith= 7  reg=0x000000ff
+ith= 8  reg=0x000001ff
+ith= 9  reg=0x000003ff
+ith=10  reg=0x000007ff
+ith=11  reg=0x00000fff
+ith=12  reg=0x00001fff
+ith=13  reg=0x00003fff
+ith=14  reg=0x00007fff
+ith=15  reg=0x0000ffff
+ith=16  reg=0x0001ffff
+ith=17  reg=0x0003ffff
+ith=18  reg=0x0007ffff
+ith=19  reg=0x000fffff
+ith=20  reg=0x001fffff
+ith=21  reg=0x003fffff
+ith=22  reg=0x007fffff
+ith=23  reg=0x00ffffff
+ith=24  reg=0x01ffffff
+ith=25  reg=0x03ffffff
+ith=26  reg=0x07ffffff
+ith=27  reg=0x0fffffff
+ith=28  reg=0x1fffffff
+ith=29  reg=0x3fffffff
+ith=30  reg=0x7fffffff
+ith=31  reg=0xffffffff
+
+ith=31  reg=0x7fffffff
+ith=30  reg=0x3fffffff
+ith=29  reg=0x1fffffff
+ith=28  reg=0x0fffffff
+ith=27  reg=0x07ffffff
+ith=26  reg=0x03ffffff
+ith=25  reg=0x01ffffff
+ith=24  reg=0x00ffffff
+ith=23  reg=0x007fffff
+ith=22  reg=0x003fffff
+ith=21  reg=0x001fffff
+ith=20  reg=0x000fffff
+ith=19  reg=0x0007ffff
+ith=18  reg=0x0003ffff
+ith=17  reg=0x0001ffff
+ith=16  reg=0x0000ffff
+ith=15  reg=0x00007fff
+ith=14  reg=0x00003fff
+ith=13  reg=0x00001fff
+ith=12  reg=0x00000fff
+ith=11  reg=0x000007ff
+ith=10  reg=0x000003ff
+ith= 9  reg=0x000001ff
+ith= 8  reg=0x000000ff
+ith= 7  reg=0x0000007f
+ith= 6  reg=0x0000003f
+ith= 5  reg=0x0000001f
+ith= 4  reg=0x0000000f
+ith= 3  reg=0x00000007
+ith= 2  reg=0x00000003
+ith= 1  reg=0x00000001
+ith= 0  reg=0x00000000
+ishiguro@lenovo:~/c$ 
+
+Note: 
+assert() code for testing argument of reg_{set, clear} should be removed to improve their performance.
+
+--------------------------------------------------------------------
+Q4: Write a swap function in C.
+void swap(unsigned int * px, unsigned int *py) { 
+} 
+
+A4: (Hisakazu, Sun Dec  7 19:26:03 PST 2014)
+
+     1	#include <stdio.h>
+     2	#include <assert.h>
+     3	
+     4	void swap(unsigned int *px, unsigned int *py)
+     5	{
+     6	  assert(px != 0 && py != 0);
+     7	
+     8	  unsigned int diff = *px ^ *py;
+     9	
+    10	  *px ^= diff;
+    11	  *py ^= diff;
+    12	}
+    13	
+    14	main()
+    15	{
+    16	  unsigned int x = 0x01234567;
+    17	  unsigned int y = 0xabcdef98;
+    18	
+    19	  printf("x=0x%08x,  y=0x%08x\n", x, y);
+    20	  printf("Do swap ...\n");
+    21	  swap(&x, &y);
+    22	  printf("x=0x%08x,  y=0x%08x\n", x, y);
+    23	
+    24	  return 0;
+    25	}
+
+ishiguro@lenovo:~/c$ gcc test4.c
+ishiguro@lenovo:~/c$ ./a.out
+x=0x01234567,  y=0xabcdef98
+Do swap ...
+x=0xabcdef98,  y=0x01234567
+ishiguro@lenovo:~/c$ 
+
+Note:
+Above algorithm should be better than the algorithim which uses extra variable to save x data before swap. Because save x consumes extra CPU's I/O read cycle.
+
+--------------------------------------------------------------------
+Q5:	What is the output of the following code? (Given: sizeof(unsigned int) is 4) Page 34 
+
+unsigned int Arr[16]; 
+unsigned int a0 = (unsigned int) &Arr[0]; 
+unsigned int a3 = (unsigned int) &Arr[3]; 
+printf(“%d\n”, a3 – a0); 
+
+A5: (Hisakazu, Sun Dec  7 19:48:05 PST 2014)
+
+12
+= ((3 - 0) * (sizeof (unsigned int))
+= 3 * 4
+
+Here is what I tested:
+
+     1	#include <stdio.h>
+     2	
+     3	main()
+     4	{
+     5	  unsigned int Arr[16];
+     6	  unsigned int a0 = (unsigned int) &Arr[0];
+     7	  unsigned int a3 = (unsigned int) &Arr[3];
+     8	  printf(“%d\n”, (a3 – a0));
+     9	}
+
+ishiguro@lenovo:~/c$ !gcc
+gcc test5.c
+test5.c: In function ‘main’:
+test5.c:6:21: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   unsigned int a0 = (unsigned int) &Arr[0];
+                     ^
+test5.c:7:21: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   unsigned int a3 = (unsigned int) &Arr[3];
+                     ^
+ishiguro@lenovo:~/c$ ./a.out
+12
+ishiguro@lenovo:~/c$
+
+
+END

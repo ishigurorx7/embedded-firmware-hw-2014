@@ -1,0 +1,38 @@
+BEGIN
+--------------------------------------------------------------------
+Q1: How many microcontrollers in the mbed LPC1768 board?
+
+A1: (Hisakazu, Sun Dec  7 22:01:03 PST 2014)
+There are two microcontrollers; Interface microcontroller and LPC1768 microcontroller.
+
+--------------------------------------------------------------------
+Q2: What is the size (in GB) of the Flash Memory ("USB Dsik") of the LPC1768?
+
+A2: (Hisakazu, Sun Dec  7 22:13:38 PST 2014)
+512KB
+
+
+--------------------------------------------------------------------
+Q3: Name 3 functions (or features) that mbed USB cable provided:
+
+A3: (Hisakazu, Sun Dec  7 22:45:13 PST 2014)
+1. mbed Serial Port (COM40) for serial communication
+2. mbed CMSIS-DAP for debugging purpose
+3. mbed USB Device for flashing data transfer and providing power
+
+--------------------------------------------------------------------
+Q4: What is the name of the Ethernet PHY chip in the mbed board (LPC1768)?
+
+A4: (Hisakazu, Sun Dec  7 22:23:13 PST 2014)
+DP83848J National  (ARM-mbed-LPC1768 Schematic sheet 4/5)
+
+--------------------------------------------------------------------
+Q5: Reference LPC17xx_UM10360.pdf (Chapter 2)
+    What are the GPIO address window?
+
+A5: (Hisakazu, Sun Dec  7 22:49:33 PST 2014)
+GPIO address range is: 0x2009c000 ~ 0x2009ffff
+(Table 3. LPC176x/5x memory usage and details,
+ "UM10360 LPC176x/5x User manual p.13)
+
+END

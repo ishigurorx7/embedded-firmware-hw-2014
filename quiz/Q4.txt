@@ -1,0 +1,121 @@
+BEGIN
+--------------------------------------------------------------------
+Q1: Implement the following inline functions: 
+inline int CircularBufferIsFull(CircularBuffer* que) 
+inline int CircularBufferIsEmpty(CircularBuffer* que) 
+
+A1: (Hisakazu, Mon Dec  8 09:42:54 PST 2014)
+inline int CircularBufferIsFull(CircularBuffer* que)
+{
+  /**
+   * Last element in buffer for write operation is not used so that
+   * it's much simpler to implement this function.
+   */
+  if (((que->writePointer + 1) & que->mask) == que->readPointer)
+    return 1;
+  return 0;
+}
+
+inline int CircularBufferIsEmpty(CircularBuffer* que)
+{
+  if (que->readPointer == que->writePointer)
+    return 1;
+  return 0;
+}
+
+--------------------------------------------------------------------
+Q2: How to compute "Interrupt Latency"?
+
+A2: (Hisakazu, Mon Dec  8 10:31:48 PST 2014)
+System interrupt latency is the interval between the assertion of the interrupt signal and the starting of the code to process that interrupt.
+
+1) Put program code to turn on the LED at the begining of the ISR something like:
+
+   InterruptIn interSig(p5);
+   DigitalOut  led(p6);
+
+   void ISR1() {
+      led = 1;
+      ... do something
+      led = 0;
+   }
+
+   main() {
+     interSig.rise(ISR1);
+     
+     while(1);
+   }
+
+2) Connect two inputs of an oscilloscope to the interrupt input(pin 5), and the LED output(pin 6), triggering from the interrupt. You should be able to see the rising edge of the interrupt input, and a few microseconds later the LED output rising. The time delay between the two is an indication of latency.
+
+--------------------------------------------------------------------
+Q3: Serial pc(USBTX, USBRX); // tx, rx 
+    What API (function) do you use to change the baud rate?
+
+A3: (Hisakazu, Mon Dec  8 09:45:44 PST 2014)
+Here is an example of the API to change their baud rate to 115200:
+pc.baud(115200)
+
+--------------------------------------------------------------------
+Q4: How many bit(s) does TDO have? Is TDO an input or output type? (Ref: JTAG Pins) 
+
+A4: (Hisakazu, Mon Dec  8 11:06:15 PST 2014)
+
+TDO is output type, and it has single bit data.
+
+Reference:
+http://en.wikipedia.org/wiki/Joint_Test_Action_Group
+
+--------------------------------------------------------------------
+Q5:
+What is the address of ledArr[0]? 
+What is the address of ch? 
+
+
+/* 
+* Enter a hex number [0-9a-fA-F]; Decode it in 4-bit binary format and display them on 4 on board leds. 
+*/ 
+
+#include "mbed.h" 
+
+Serial pc(USBTX, USBRX); // tx, rx 
+DigitalOut ledArr[4] = {DigitalOut(LED1), DigitalOut(LED2), DigitalOut(LED3), DigitalOut(LED4)}; 
+void DisplayLed(int ch) 
+{ 
+	int i=0;
+
+	if (ch>='0' && ch<='9')
+		ch-='0';
+	else if (ch>='A' && ch<='F') {
+		ch-='A';
+		ch+=10;
+	} else if (ch>='a' && ch<='f') {
+		ch-='a';
+		ch+=10;
+	} else
+		ch=0;
+
+	for (i=0; i<4; i++) { 
+		if(ch& (1<<i))
+			ledArr[i] = 1; 
+		else
+			ledArr[i] = 0;
+	} 
+} 
+
+int main(void) { 
+	int ch; 
+	pc.baud(9600); 
+	pc.printf("\r\nHello World!"); 
+	while(1) { 
+		pc.printf("\r\nEnter:"); 
+		ch = pc.getc(); 
+		pc.putc(ch); 
+		DisplayLed(ch); 
+	} 
+}
+
+A5: (Hisakazu, Mon Dec  8 11:39:13 PST 2014)
+
+&ch       =10007ff8
+&ledArr[0]=1000015c
